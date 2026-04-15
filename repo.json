@@ -1,0 +1,8 @@
+{
+  "name": "HDporn92 Provider",
+  "description": "HDporn92 - Free Premium Porn Videos",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/senkuboy0-cyber/HDporn92Provider/builds/plugins.json"
+  ]
+}
