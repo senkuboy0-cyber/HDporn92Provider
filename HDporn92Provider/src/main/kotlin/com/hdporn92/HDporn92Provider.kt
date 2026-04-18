@@ -117,22 +117,34 @@ class HDporn92Provider : MainAPI() {
     val embedHtml = app.get(
         data,
         headers = mapOf(
-            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
             "Referer" to mainUrl
         )
     ).text
 
-    val m3u8Url = Regex("""["'](https://[^"']+/stream/[^"']+\.m3u8[^"']*)["']""")
-        .find(embedHtml)?.groupValues?.get(1)
+    // file_id from cookie setter
+    val fileId = Regex("""file_id['"]\s*,\s*['"](\d+)['"]""")
+        .find(embedHtml)?.groupValues?.get(1) ?: return false
 
-    if (m3u8Url != null) {
-        callback(
-            newExtractorLink(name, name, m3u8Url, ExtractorLinkType.M3U8) {
-                this.quality = Qualities.P1080.value
-                this.referer = data
-            }
-        )
-        return true
+    // word list থেকে token আর timestamp বের করো
+    val wordList = Regex("""'([A-Za-z0-9|_${'$'}+/=\-]+)'\)\.split\('\|'\)""")
+        .find(embedHtml)?.groupValues?.get(1)?.split("|") ?: return false
+
+    val hjkIdx = wordList.indexOf("hjkrhuihghfvu")
+    if (hjkIdx < 1) return false
+
+    val timestamp = wordList[hjkIdx - 1]
+    val token = wordList[hjkIdx + 1]
+
+    val m3u8Url = "https://minochinos.com/stream/$token/hjkrhuihghfvu/$timestamp/$fileId/master.m3u8"
+
+    callback(
+        newExtractorLink(name, name, m3u8Url, ExtractorLinkType.M3U8) {
+            this.quality = Qualities.P1080.value
+            this.referer = data
+        }
+    )
+    return true
     }
 
     return false
