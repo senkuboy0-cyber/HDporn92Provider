@@ -89,7 +89,10 @@ class HDporn92Provider : MainAPI() {
             ?: doc.selectFirst(".entry-content p")?.text()
             
         // Find iframe embed URL
-        val embedUrl = doc.selectFirst("iframe")?.attr("src") ?: ""
+        val embedUrl = doc.select("iframe[src]")
+    .map { it.attr("src") }
+    .firstOrNull { it.contains("minochinos.com") || it.contains("vidhide") }
+    ?: ""
 
         return newMovieLoadResponse(title, url, TvType.Movie, embedUrl) {
             this.posterUrl = poster
