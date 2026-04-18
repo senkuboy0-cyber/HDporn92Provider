@@ -127,15 +127,10 @@ class HDporn92Provider : MainAPI() {
         .find(embedHtml)?.groupValues?.get(1) ?: return false
 
     // word list থেকে token আর timestamp বের করো
-    val wordList = Regex("""'([A-Za-z0-9|_${'$'}+/=\-]+)'\)\.split\('\|'\)""")
-        .find(embedHtml)?.groupValues?.get(1)?.split("|") ?: return false
-
-    val hjkIdx = wordList.indexOf("hjkrhuihghfvu")
-    if (hjkIdx < 1) return false
-
-    val timestamp = wordList[hjkIdx - 1]
-    val token = wordList[hjkIdx + 1]
-
+    val hjkMatch = Regex("""[A-Za-z0-9+/=_\-]+\|(\d+)\|hjkrhuihghfvu\|([A-Za-z0-9+/=_\-]+)""")
+    .find(embedHtml) ?: return false
+val timestamp = hjkMatch.groupValues[1]
+val token = hjkMatch.groupValues[2]
     val m3u8Url = "https://minochinos.com/stream/$token/hjkrhuihghfvu/$timestamp/$fileId/master.m3u8"
 
     callback(
