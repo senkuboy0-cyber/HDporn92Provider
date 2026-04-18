@@ -127,7 +127,7 @@ class HDporn92Provider : MainAPI() {
             
             // For minochinos.com embeds, we can try to extract m3u8 directly
             if (embedDomain.contains("minochinos") || embedDomain.contains("vidhide")) {
-                return loadExtractor(embedUrl, headers = headers, callback = callback)
+                return loadExtractor(embedUrl, subtitleCallback = subtitleCallback, callback = callback)
             }
         }
         
