@@ -98,39 +98,43 @@ class HDporn92Provider : MainAPI() {
     }
 
     override suspend fun loadLinks(
-        data: String,
-        isCasting: Boolean,
-        subtitleCallback: (SubtitleFile) -> Unit,
-        callback: (ExtractorLink) -> Unit
-    ): Boolean {
-        if (data.isBlank()) return false
-        
-        // If it's already a direct video URL
-        if (data.contains(".m3u8") || data.contains(".mp4")) {
-            callback(
-                newExtractorLink(name, "$name", data, ExtractorLinkType.M3U8) {
-                    this.quality = Qualities.P1080.value
-                    this.headers = headers
-                }
-            )
-            return true
-        }
-        
-        // Get embed page to find the video URL
-        val embedDoc = app.get(data, headers = headers).document
-        val embedUrl = embedDoc.selectFirst("iframe")?.attr("src") ?: data
-        
-        // If it's an embed URL, use loadExtractor to handle it
-        if (embedUrl != data) {
-            // Extract the embed domain
-            val embedDomain = embedUrl.substringAfter("//").substringBefore("/")
-            
-            // For minochinos.com embeds, we can try to extract m3u8 directly
-            if (embedDomain.contains("minochinos") || embedDomain.contains("vidhide")) {
-                return loadExtractor(embedUrl, subtitleCallback = subtitleCallback, callback = callback)
+    data: String,
+    isCasting: Boolean,
+    subtitleCallback: (SubtitleFile) -> Unit,
+    callback: (ExtractorLink) -> Unit
+): Boolean {
+    if (data.isBlank()) return false
+
+    if (data.contains(".m3u8") || data.contains(".mp4")) {
+        callback(
+            newExtractorLink(name, name, data, ExtractorLinkType.M3U8) {
+                this.quality = Qualities.P1080.value
             }
-        }
-        
-        return false
+        )
+        return true
+    }
+
+    val embedHtml = app.get(
+        data,
+        headers = mapOf(
+            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Referer" to mainUrl
+        )
+    ).text
+
+    val m3u8Url = Regex("""["'](https://[^"']+/stream/[^"']+\.m3u8[^"']*)["']""")
+        .find(embedHtml)?.groupValues?.get(1)
+
+    if (m3u8Url != null) {
+        callback(
+            newExtractorLink(name, name, m3u8Url, ExtractorLinkType.M3U8) {
+                this.quality = Qualities.P1080.value
+                this.referer = data
+            }
+        )
+        return true
+    }
+
+    return false
     }
 }
