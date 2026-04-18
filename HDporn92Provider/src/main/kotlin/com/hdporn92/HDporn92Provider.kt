@@ -145,8 +145,5 @@ class HDporn92Provider : MainAPI() {
         }
     )
     return true
-    }
-
-    return false
-    }
+}
 }
