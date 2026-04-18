@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/senkuboy0-cyber/HDporn92Provider/builds/HDporn92Provider.cs3",
+    "internalName": "HDporn92Provider",
+    "tvTypes": ["Movie", "TvSeries", "Others"],
+    "language": "en",
+    "name": "HDporn92",
+    "authors": ["senkuboy0-cyber"],
+    "version": 1,
+    "description": "HDporn92 - Free Premium Porn Videos",
+    "repositoryUrl": "https://github.com/senkuboy0-cyber/HDporn92Provider",
+    "status": 1
+  }
+]
