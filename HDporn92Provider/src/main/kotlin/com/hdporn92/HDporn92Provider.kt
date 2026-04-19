@@ -141,11 +141,11 @@ class HDporn92Provider : MainAPI() {
     ).text
 
     // file_id from cookie setter
-    val fileId = Regex("\"file_id['\"]\s*,\s*['\"](\d+)['\"]\"")
+    val fileId = Regex("""file_id['"]\s*,\s*['"](\d+)['"]""")
         .find(embedHtml)?.groupValues?.get(1) ?: return false
 
     // word list থেকে token আর timestamp বের করো
-    val hjkMatch = Regex("\"\"[A-Za-z0-9+/=_\-]+\|(\d+)\|hjkrhuihghfvu\|([A-Za-z0-9+/=_\-]+)\"\"")
+    val hjkMatch = Regex("""[A-Za-z0-9+/=_\-]+\|(\d+)\|hjkrhuihghfvu\|([A-Za-z0-9+/=_\-]+)""")
     .find(embedHtml) ?: return false
 val timestamp = hjkMatch.groupValues[1]
 val token = hjkMatch.groupValues[2]
