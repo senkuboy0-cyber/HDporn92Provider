@@ -91,8 +91,13 @@ class HDporn92Provider : MainAPI() {
         // Find iframe embed URL
         val embedUrl = doc.select("iframe[src]")
     .map { it.attr("src") }
-    .firstOrNull { it.contains("minochinos.com") || it.contains("vidhide") }
-    ?: ""
+    .firstOrNull { 
+        it.contains("minochinos.com") || 
+        it.contains("vidhide") ||
+        it.contains("dood.") ||
+        it.contains("streamtape") ||
+        it.contains("filemoon")
+    } ?: ""
 
         return newMovieLoadResponse(title, url, TvType.Movie, embedUrl) {
             this.posterUrl = poster
@@ -107,6 +112,16 @@ class HDporn92Provider : MainAPI() {
     callback: (ExtractorLink) -> Unit
 ): Boolean {
     if (data.isBlank()) return false
+
+    // dood.yt embed handle
+    if (data.contains("dood.")) {
+        return loadExtractor(data, subtitleCallback = subtitleCallback, callback = callback)
+    }
+
+    // streamtape handle  
+    if (data.contains("streamtape")) {
+        return loadExtractor(data, subtitleCallback = subtitleCallback, callback = callback)
+    }
 
     if (data.contains(".m3u8") || data.contains(".mp4")) {
         callback(
@@ -126,11 +141,11 @@ class HDporn92Provider : MainAPI() {
     ).text
 
     // file_id from cookie setter
-    val fileId = Regex("""file_id['"]\s*,\s*['"](\d+)['"]""")
+    val fileId = Regex("\"file_id['\"]\s*,\s*['\"](\d+)['\"]\"")
         .find(embedHtml)?.groupValues?.get(1) ?: return false
 
     // word list থেকে token আর timestamp বের করো
-    val hjkMatch = Regex("""[A-Za-z0-9+/=_\-]+\|(\d+)\|hjkrhuihghfvu\|([A-Za-z0-9+/=_\-]+)""")
+    val hjkMatch = Regex("\"\"[A-Za-z0-9+/=_\-]+\|(\d+)\|hjkrhuihghfvu\|([A-Za-z0-9+/=_\-]+)\"\"")
     .find(embedHtml) ?: return false
 val timestamp = hjkMatch.groupValues[1]
 val token = hjkMatch.groupValues[2]
